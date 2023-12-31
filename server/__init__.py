@@ -1,19 +1,5 @@
 import os
 from flask import Flask, request
-import psycopg2
-from dotenv import load_dotenv
-from flask_login import LoginManager
-from flask_sqlalchemy import SQLAlchemy
-from bson.objectid import ObjectId
-
-load_dotenv()
-database_url = os.getenv("DATABASE_URL")
-
-CREATE_CATEGORY_TABLE = (
-    "CREATE TABLE IF NOT EXISTS Category (category_id SERIAL PRIMARY KEY, category_name TEXT);"
-)
-
-INSERT_CATEGORY_RETURN_ID = "INSERT INTO Category (category_name) VALUES (%s) RETURNING category_id;"
 
 def create_app():
     app = Flask(__name__)
