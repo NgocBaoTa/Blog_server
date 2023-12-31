@@ -91,3 +91,83 @@ CREATE_NOTIFICATION_TABLE = """
         FOREIGN KEY(postID) REFERENCES Post(postID)
     );
 """
+
+INSERT_CATEGORY_RETURN_ID = """
+    INSERT INTO Category (
+        categoryName,
+        createdAt,
+        updatedAt
+    ) VALUES (%s, %s, %s) 
+    RETURNING categoryID;
+"""
+
+INSERT_USER_RETURN_ID = """
+    INSERT INTO User (
+        username,
+        email,
+        password,
+        userType,
+        avatar,
+        description,
+        createdAt,
+        updatedAt
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) 
+    RETURNING userID;
+"""
+
+INSERT_VIEWER_RETURN_ID = """
+    INSERT INTO Viewer (
+        username,
+        email,
+        createdAt,
+        updatedAt
+    ) VALUES (%s, %s, %s, %s)  
+    RETURNING viewerID;
+"""
+
+INSERT_POST_RETURN_ID = """
+    INSERT INTO Post (
+        categoryID, 
+        authorID,
+        postTitle,
+        postContent,
+        postType,
+        createdAt,
+        updatedAt
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s) 
+    RETURNING postID;
+"""
+
+INSERT_COMMENT_RETURN_ID = """
+    INSERT INTO Comment (
+        userID, 
+        postID,
+        message, 
+        replies,
+        createdAt,
+        updatedAt
+    ) VALUES (%s, %s, %s, %s, %s, %s) 
+    RETURNING commentID;
+"""
+
+INSERT_MEDIA_RETURN_ID = """
+    INSERT INTO Media (
+        postID,
+        mediaType,
+        mediaUrl,
+        size
+    ) VALUES (%s, %s, %s, %s) 
+    RETURNING mediaID;
+"""
+
+INSERT_NOTIFICATION_RETURN_ID = """
+    INSERT INTO Notification (
+        postID,
+        userID,
+        notiType,  
+        status,  
+        notiContent,
+        createdAt
+    ) VALUES (%s, %s, %s, %s, %s, %s) 
+    RETURNING notificationID;
+"""
