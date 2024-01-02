@@ -1,10 +1,10 @@
-import os
-import psycopg2
-from dotenv import load_dotenv
+from contextlib import contextmanager
 
-load_dotenv()
-database_url = os.getenv("DATABASE_URL")
-connection = psycopg2.connect(database_url)
+@contextmanager
+def get_cursor(connection):
+    with connection:
+        with connection.cursor() as cursor:
+            yield cursor
 
 # ============================= CREATE TABLES =============================
 
@@ -214,66 +214,58 @@ GET_ALL_VIEWER = " SELECT * FROM Viewer; "
             
 # ============================= CREATE TABLES =============================
     
-def create_tables():
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(CREATE_CATEGORY_TABLE)
-            cursor.execute(CREATE_USER_TABLE)
-            cursor.execute(CREATE_VIEWER_TABLE)
-            cursor.execute(CREATE_POST_TABLE)
-            cursor.execute(CREATE_COMMENT_TABLE)
-            cursor.execute(CREATE_MEDIA_TABLE)
-            cursor.execute(CREATE_NOTIFICATION_TABLE)
+def create_tables(connection):
+    with get_cursor(connection) as cursor:
+        cursor.execute(CREATE_CATEGORY_TABLE)
+        cursor.execute(CREATE_USER_TABLE)
+        cursor.execute(CREATE_VIEWER_TABLE)
+        cursor.execute(CREATE_POST_TABLE)
+        cursor.execute(CREATE_COMMENT_TABLE)
+        cursor.execute(CREATE_MEDIA_TABLE)
+        cursor.execute(CREATE_NOTIFICATION_TABLE)
 
 
 # ============================= INSERT DATA ===============================
 
-def add_category(categoryName, createdAt, updatedAt):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_CATEGORY_RETURN_ID, (categoryName, createdAt, updatedAt))
-            return cursor.fetchone()[0]
+def add_category(connection, categoryName, createdAt, updatedAt):
+    with get_cursor(connection) as cursor:
+        cursor.execute(INSERT_CATEGORY_RETURN_ID, (categoryName, createdAt, updatedAt))
+        return cursor.fetchone()[0]
 
 
-def add_user(username, email, password, userType, avatar, description, createdAt, updatedAt):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_USER_RETURN_ID, (username, email, password, userType, avatar, description, createdAt, updatedAt))
-            return cursor.fetchone()[0]
+def add_user(connection, username, email, password, userType, avatar, description, createdAt, updatedAt):
+    with get_cursor(connection) as cursor:
+        cursor.execute(INSERT_USER_RETURN_ID, (username, email, password, userType, avatar, description, createdAt, updatedAt))
+        return cursor.fetchone()[0]
 
 
-def add_viewer(username, email, createdAt, updatedAt):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_VIEWER_RETURN_ID, (username, email, createdAt, updatedAt))
-            return cursor.fetchone()[0]
+def add_viewer(connection, username, email, createdAt, updatedAt):
+    with get_cursor(connection) as cursor:
+        cursor.execute(INSERT_VIEWER_RETURN_ID, (username, email, createdAt, updatedAt))
+        return cursor.fetchone()[0]
 
 
-def add_post(categoryID, authorID, postTitle, postContent, postType, createdAt, updatedAt):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_POST_RETURN_ID, (categoryID, authorID, postTitle, postContent, postType, createdAt, updatedAt))
-            return cursor.fetchone()[0]
+def add_post(connection, categoryID, authorID, postTitle, postContent, postType, createdAt, updatedAt):
+    with get_cursor(connection) as cursor:
+        cursor.execute(INSERT_POST_RETURN_ID, (categoryID, authorID, postTitle, postContent, postType, createdAt, updatedAt))
+        return cursor.fetchone()[0]
 
 
-def add_comment(userID, postID, message, replies, createdAt, updatedAt):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_COMMENT_RETURN_ID, (userID, postID, message, replies, createdAt, updatedAt))
-            return cursor.fetchone()[0]
+def add_comment(connection, userID, postID, message, replies, createdAt, updatedAt):
+    with get_cursor(connection) as cursor:
+        cursor.execute(INSERT_COMMENT_RETURN_ID, (userID, postID, message, replies, createdAt, updatedAt))
+        return cursor.fetchone()[0]
 
 
-def add_media(postID, mediaType, mediaUrl, size):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_MEDIA_RETURN_ID, (postID, mediaType, mediaUrl, size))
-            return cursor.fetchone()[0]
+def add_media(connection, postID, mediaType, mediaUrl, size):
+    with get_cursor(connection) as cursor:
+        cursor.execute(INSERT_MEDIA_RETURN_ID, (postID, mediaType, mediaUrl, size))
+        return cursor.fetchone()[0]
 
 
-def add_notification(postID, userID, notiType, status, notiContent, createdAt):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_NOTIFICATION_RETURN_ID, (postID, userID, notiType, status, notiContent, createdAt))
-            return cursor.fetchone()[0]
-            
+def add_notification(connection, postID, userID, notiType, status, notiContent, createdAt):
+    with get_cursor(connection) as cursor:
+        cursor.execute(INSERT_NOTIFICATION_RETURN_ID, (postID, userID, notiType, status, notiContent, createdAt))
+        return cursor.fetchone()[0]
+
 
