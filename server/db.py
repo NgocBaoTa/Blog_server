@@ -43,7 +43,7 @@ CREATE_VIEWER_TABLE = """
 CREATE_POST_TABLE = """
     CREATE TABLE IF NOT EXISTS Post (
         postID SERIAL PRIMARY KEY,
-        categoryID INTEGER, 
+        categoryID INT[], 
         authorID INT[],
         postTitle TEXT,
         postContent TEXT,
@@ -285,6 +285,33 @@ UPDATE_USER_BY_ID = """
         updatedAt = %s
     WHERE userID = %s;
 """
+
+
+# ============================= DELETE DATA ===============================
+
+# Delete category
+DELETE_CATEGORY_BY_ID = " DELETE FROM Category WHERE categoryID = %s; "
+
+# Delete comment
+DELETE_COMMENT_BY_ID = " DELETE FROM Comment WHERE commentID = %s; "
+DELETE_COMMENT_BY_POST = " DELETE FROM Comment WHERE postID = %s; "
+
+# Delete media
+DELETE_MEDIA_BY_ID = " DELETE FROM Media WHERE mediaID = %s; "
+DELETE_MEDIA_BY_POST = " DELETE FROM Media WHERE postID = %s; "
+
+# Delete notification 
+DELETE_NOTIFICATION_BY_ID = " DELETE FROM Notification WHERE notificationID = %s; "
+DELETE_NOTIFICATION_BY_USER = " DELETE FROM Notification WHERE userID = %s; "
+
+# Delete post
+DELETE_POST_BY_ID = " DELETE FROM Post WHERE postID = %s; "
+
+# Delete user
+DELETE_USER_BY_ID = " DELETE FROM User WHERE userID = %s; "
+
+# Delete viewer
+DELETE_VIEWER_BY_ID = " DELETE FROM Viewer WHERE viewerID = %s; "
 
             
 # ============================= CREATE TABLES FUNCTION =============================
