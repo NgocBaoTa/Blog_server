@@ -205,8 +205,9 @@ GET_LATEST_POST = " SELECT * FROM Post ORDER BY createdAt DESC LIMIT 10;  "  # g
 SEARCH_POST = " SELECT * FROM Post WHERE postTitle LIKE %s; "
 
 # Get user
-GET_ALL_USERS = " SELECT * FROM User; "
+GET_ALL_USER = " SELECT * FROM User; "
 GET_USER_BY_ID = " SELECT * FROM User WHERE userID = %s; "
+GET_USER_BY_EMAIL = " SELECT * FROM User WHERE email = %s; "
 
 # Get viewer
 GET_ALL_VIEWER = " SELECT * FROM Viewer; "
@@ -217,7 +218,9 @@ GET_ALL_VIEWER = " SELECT * FROM Viewer; "
 # Update category
 UPDATE_CATEGORY_BY_ID = """ 
     UPDATE Category
-    SET categoryName = %s, updatedAt = %s
+    SET 
+        categoryName = %s, 
+        updatedAt = %s
     WHERE categoryID = %s;
 """
 
@@ -259,7 +262,6 @@ UPDATE_NOTIFICATION_BY_USER = """
 """
 
 # Update post
-
 UPDATE_POST_BY_ID = """ 
     UPDATE Post
     SET 
@@ -314,6 +316,7 @@ DELETE_USER_BY_ID = " DELETE FROM User WHERE userID = %s; "
 DELETE_VIEWER_BY_ID = " DELETE FROM Viewer WHERE viewerID = %s; "
 
             
+
 # ============================= CREATE TABLES FUNCTION =============================
     
 def create_tables(connection):
@@ -325,6 +328,101 @@ def create_tables(connection):
         cursor.execute(CREATE_COMMENT_TABLE)
         cursor.execute(CREATE_MEDIA_TABLE)
         cursor.execute(CREATE_NOTIFICATION_TABLE)
+
+
+# ============================= GET DATA FUNCTIONS ===============================
+
+# Get category
+def get_all_category(connection):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_ALL_CATEGORY)
+        return cursor.fetchall()
+
+def get_category_by_id(connection, categoryID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_CATEGORY_BY_ID, (categoryID,))
+        return cursor.fetchone()
+
+# Get user
+def get_all_user(connection):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_ALL_USER)
+        return cursor.fetchall()
+
+def get_user_by_id(connection, userID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_USER_BY_ID, (userID,))
+        return cursor.fetchone()
+
+def get_user_by_email(connection, email):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_USER_BY_EMAIL, (email,))
+        return cursor.fetchone()
+
+# Get viewer
+def get_all_viewer(connection):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_ALL_VIEWER)
+        return cursor.fetchall()
+
+# Get post
+def get_all_post(connection):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_ALL_POST)
+        return cursor.fetchall()
+
+def get_post_by_id(connection, postID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_POST_BY_ID, (postID,))
+        return cursor.fetchone()
+    
+def get_post_by_author(connection, authorID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_POST_BY_AUTHOR, (authorID,))
+        return cursor.fetchall()
+
+def get_latest_post(connection):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_LATEST_POST)
+        return cursor.fetchall()
+
+def search_post(connection, search_text):
+    with get_cursor(connection) as cursor:
+        cursor.execute(SEARCH_POST, (search_text,))
+        return cursor.fetchall()
+
+# Get comment
+def get_comment_by_id(connection, commentID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_COMMENT_BY_ID, (commentID,))
+        return cursor.fetchone()
+    
+def get_comment_by_post(connection, postID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_COMMENT_BY_POST, (postID,))
+        return cursor.fetchall()
+
+# Get media
+def get_media_by_id(connection, mediaID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_MEDIA_BY_ID, (mediaID,))
+        return cursor.fetchone()
+    
+def get_media_by_post(connection, postID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_MEDIA_BY_POST, (postID,))
+        return cursor.fetchall()
+
+# Get notification
+def get_notification_by_id(connection, notificationID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_NOTIFICATION_BY_ID, (notificationID,))
+        return cursor.fetchone()
+    
+def get_notification_by_user(connection, userID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_NOTIFICATION_BY_USER, (userID,))
+        return cursor.fetchall()
 
 
 # ============================= INSERT DATA FUNCTIONS ===============================
@@ -369,5 +467,6 @@ def add_notification(connection, postID, userID, notiType, status, notiContent, 
     with get_cursor(connection) as cursor:
         cursor.execute(INSERT_NOTIFICATION_RETURN_ID, (postID, userID, notiType, status, notiContent, createdAt, updatedAt))
         return cursor.fetchone()[0]
+
 
 
