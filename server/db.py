@@ -584,3 +584,67 @@ def update_notification_by_user(connection, status, updatedAt, userID):
         return cursor.rowcount()
 
 
+# ============================= DELETE DATA FUNCTIONS ===============================
+
+# Delete category
+def delete_category_by_id(connection, categoryID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_CATEGORY_BY_ID, (categoryID,))
+        return cursor.rowcount()
+
+# Delete user
+def delete_user_by_id(connection, userID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_USER_BY_ID, (userID,))
+        return cursor.rowcount()
+
+# Delete viewer
+def delete_viewer_by_id(connection, viewerID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_VIEWER_BY_ID, (viewerID,))
+        return cursor.rowcount()
+
+# Delete post
+def delete_post_by_id(connection, postID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_POST_BY_ID, (postID,))
+        return cursor.rowcount()
+    
+# Delete post_author
+def delete_post_author_by_id(connection, postAuthorID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_POST_AUTHOR_BY_ID, (postAuthorID,))
+        return cursor.rowcount()
+    
+# Delete comment
+def delete_comment_by_id(connection, commentID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_COMMENT_BY_ID, (commentID,))
+        return cursor.rowcount()
+    
+def delete_comment_by_post(connection, postID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_COMMENT_BY_POST, (postID,))
+        return cursor.rowcount()
+
+# Delete media
+def delete_media_by_id(connection, mediaID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_MEDIA_BY_ID, (mediaID,))
+        return cursor.rowcount()
+    
+def delete_media_by_post(connection, postID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_MEDIA_BY_POST, (postID,))
+        return cursor.rowcount()
+
+# Delete notification
+def delete_notification_by_id(connection, notificationID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_NOTIFICATION_BY_ID, (notificationID,))
+        return cursor.rowcount()
+    
+def delete_notification_by_user(connection, userID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(DELETE_NOTIFICATION_BY_USER, (userID,))
+        return cursor.rowcount()
