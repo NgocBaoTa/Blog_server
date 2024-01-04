@@ -13,12 +13,12 @@ CREATE_CATEGORY_TABLE = """
         categoryID SERIAL PRIMARY KEY, 
         categoryName TEXT,
         createdAt INTEGER,
-        updatedAt INTEGER,
+        updatedAt INTEGER
     );
 """
 
 CREATE_USER_TABLE = """
-    CREATE TABLE IF NOT EXISTS User (
+    CREATE TABLE IF NOT EXISTS "User" (
         userID SERIAL PRIMARY KEY, 
         username TEXT,
         email TEXT,
@@ -27,7 +27,7 @@ CREATE_USER_TABLE = """
         avatar TEXT,
         description TEXT,
         createdAt INTEGER,
-        updatedAt INTEGER,
+        updatedAt INTEGER
     );
 """
 
@@ -47,10 +47,10 @@ CREATE_POST_TABLE = """
         authorID INT[],
         postTitle TEXT,
         postContent TEXT,
-        postStatus TEXT,  # posted/ updated/reviewing
+        postStatus TEXT,  
         createdAt INTEGER,
         updatedAt INTEGER,
-        FOREIGN KEY(authorID) REFERENCES User(userID),
+        FOREIGN KEY(authorID) REFERENCES "User"(userID),
         FOREIGN KEY(categoryID) REFERENCES Category(categoryID)
     );
 """
@@ -61,10 +61,10 @@ CREATE_COMMENT_TABLE = """
         userID INTEGER, 
         postID INTEGER,
         message TEXT, 
-        replies INT[],  # array of commentID
+        replies INT[],  
         createdAt INTEGER,
         updatedAt INTEGER,
-        FOREIGN KEY(userID) REFERENCES User(userID),
+        FOREIGN KEY(userID) REFERENCES "User"(userID),
         FOREIGN KEY(postID) REFERENCES Post(postID)
     );
 """
@@ -75,7 +75,7 @@ CREATE_MEDIA_TABLE = """
         postID INTEGER,
         mediaType TEXT,
         mediaUrl TEXT,
-        size FLOAT[],  # contains 2 elements: width and height
+        size FLOAT[],  
         FOREIGN KEY(postID) REFERENCES Post(postID)
     );
 """
@@ -84,13 +84,13 @@ CREATE_NOTIFICATION_TABLE = """
     CREATE TABLE IF NOT EXISTS Notification (
         notificationID SERIAL PRIMARY KEY, 
         postID INTEGER,
-        userID INT[],  # because 1 post can have multiple authors
-        notiType TEXT,  #reply/ comment/ approve/ review/ decline
-        status TEXT,  # read/ unread
+        userID INT[],  
+        notiType TEXT,  
+        status TEXT,  
         notiContent TEXT,
         createdAt INTEGER,
         updatedAt INTEGER,
-        FOREIGN KEY(userID) REFERENCES User(userID),
+        FOREIGN KEY(userID) REFERENCES "User"(userID),
         FOREIGN KEY(postID) REFERENCES Post(postID)
     );
 """
@@ -108,7 +108,7 @@ INSERT_CATEGORY_RETURN_ID = """
 """
 
 INSERT_USER_RETURN_ID = """
-    INSERT INTO User (
+    INSERT INTO "User" (
         username,
         email,
         password,
@@ -205,9 +205,9 @@ GET_LATEST_POST = " SELECT * FROM Post ORDER BY createdAt DESC LIMIT 10;  "  # g
 SEARCH_POST = " SELECT * FROM Post WHERE postTitle LIKE %s; "
 
 # Get user
-GET_ALL_USER = " SELECT * FROM User; "
-GET_USER_BY_ID = " SELECT * FROM User WHERE userID = %s; "
-GET_USER_BY_EMAIL = " SELECT * FROM User WHERE email = %s; "
+GET_ALL_USER = " SELECT * FROM 'User'; "
+GET_USER_BY_ID = " SELECT * FROM 'User' WHERE userID = %s; "
+GET_USER_BY_EMAIL = " SELECT * FROM 'User' WHERE email = %s; "
 
 # Get viewer
 GET_ALL_VIEWER = " SELECT * FROM Viewer; "
@@ -276,7 +276,7 @@ UPDATE_POST_BY_ID = """
 
 # Update user
 UPDATE_USER_BY_ID = """ 
-    UPDATE User
+    UPDATE "User"
     SET 
         username = %s,
         email = %s,
@@ -310,7 +310,7 @@ DELETE_NOTIFICATION_BY_USER = " DELETE FROM Notification WHERE userID = %s; "
 DELETE_POST_BY_ID = " DELETE FROM Post WHERE postID = %s; "
 
 # Delete user
-DELETE_USER_BY_ID = " DELETE FROM User WHERE userID = %s; "
+DELETE_USER_BY_ID = " DELETE FROM 'User' WHERE userID = %s; "
 
 # Delete viewer
 DELETE_VIEWER_BY_ID = " DELETE FROM Viewer WHERE viewerID = %s; "
@@ -467,6 +467,4 @@ def add_notification(connection, postID, userID, notiType, status, notiContent, 
     with get_cursor(connection) as cursor:
         cursor.execute(INSERT_NOTIFICATION_RETURN_ID, (postID, userID, notiType, status, notiContent, createdAt, updatedAt))
         return cursor.fetchone()[0]
-
-
 
