@@ -43,15 +43,23 @@ CREATE_VIEWER_TABLE = """
 CREATE_POST_TABLE = """
     CREATE TABLE IF NOT EXISTS Post (
         postID SERIAL PRIMARY KEY,
-        categoryID INT[], 
-        authorID INT[],
+        categoryID INTEGER, 
         postTitle TEXT,
         postContent TEXT,
         postStatus TEXT,  
         createdAt INTEGER,
         updatedAt INTEGER,
-        FOREIGN KEY(authorID) REFERENCES "User"(userID),
         FOREIGN KEY(categoryID) REFERENCES Category(categoryID)
+    );
+"""
+
+CREATE_POST_AUTHOR_TABLE = """
+    CREATE TABLE IF NOT EXISTS PostAuthor (
+        postAuthorID SERIAL PRIMARY KEY,
+        postID INTEGER,
+        userID INTEGER,
+        FOREIGN KEY(userID) REFERENCES "User"(userID),
+        FOREIGN KEY(postID) REFERENCES Post(postID)
     );
 """
 
@@ -60,12 +68,20 @@ CREATE_COMMENT_TABLE = """
         commentID SERIAL PRIMARY KEY, 
         userID INTEGER, 
         postID INTEGER,
-        message TEXT, 
-        replies INT[],  
+        message TEXT,   
         createdAt INTEGER,
         updatedAt INTEGER,
         FOREIGN KEY(userID) REFERENCES "User"(userID),
         FOREIGN KEY(postID) REFERENCES Post(postID)
+    );
+"""
+
+CREATE_REPLYTO_TABLE = """
+    CREATE TABLE IF NOT EXISTS ReplyTo (
+        replyID SERIAL PRIMARY KEY,
+        commentID INTEGER,
+        responseID INTEGER,
+        FOREIGN KEY(commentID, responseID) REFERENCES Comment(commentID)
     );
 """
 
@@ -84,7 +100,7 @@ CREATE_NOTIFICATION_TABLE = """
     CREATE TABLE IF NOT EXISTS Notification (
         notificationID SERIAL PRIMARY KEY, 
         postID INTEGER,
-        userID INT[],  
+        userID INTEGER,  
         notiType TEXT,  
         status TEXT,  
         notiContent TEXT,
@@ -133,14 +149,21 @@ INSERT_VIEWER_RETURN_ID = """
 INSERT_POST_RETURN_ID = """
     INSERT INTO Post (
         categoryID, 
-        authorID,
         postTitle,
         postContent,
         postStatus,
         createdAt,
         updatedAt
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s) 
+    ) VALUES (%s, %s, %s, %s, %s, %s) 
     RETURNING postID;
+"""
+
+INSERT_POST_AUTHOR_RETURN_ID = """
+    INSERT INTO PostAuthor (
+        postID, 
+        userID
+    ) VALUES (%s, %s) 
+    RETURNING postAuthorID;
 """
 
 INSERT_COMMENT_RETURN_ID = """
@@ -148,11 +171,18 @@ INSERT_COMMENT_RETURN_ID = """
         userID, 
         postID,
         message, 
-        replies,
         createdAt,
         updatedAt
-    ) VALUES (%s, %s, %s, %s, %s, %s) 
+    ) VALUES (%s, %s, %s, %s, %s) 
     RETURNING commentID;
+"""
+
+INSERT_REPLYTO_RETURN_ID = """
+    INSERT INTO ReplyTo (
+        commentID,
+        responseID
+    ) VALUES (%s, %s) 
+    RETURNING replyID;
 """
 
 INSERT_MEDIA_RETURN_ID = """
@@ -187,7 +217,13 @@ GET_CATEGORY_BY_ID = " SELECT * FROM Category WHERE categoryID = %s; "
 
 # Get comment
 GET_COMMENT_BY_ID = " SELECT * FROM Comment WHERE commentID = %s; "
-GET_COMMENT_BY_POST = " SELECT * FROM Comment WHERE postID = %s; "
+GET_COMMENT_BY_POST = """
+    SELECT *
+    FROM Comment c 
+        LEFT OUTER JOIN Comment r ON c.commentID = r.commentID  
+        LEFT OUTER JOIN ReplyTo rt ON rt.responseID = r.commentID
+    WHERE c.postID = %s;
+"""
 
 # Get media
 GET_MEDIA_BY_ID = " SELECT * FROM Media WHERE mediaID = %s; "
@@ -198,11 +234,31 @@ GET_NOTIFICATION_BY_ID = " SELECT * FROM Notification WHERE notificationID = %s;
 GET_NOTIFICATION_BY_USER = " SELECT * FROM Notification WHERE userID = %s; "
 
 # Get post
-GET_ALL_POST = " SELECT * FROM Post; "
+GET_ALL_POST = """ 
+    SELECT p.*, u.* 
+    FROM Post p
+        JOIN PostAuthor pa ON p.postID = pa.postID
+        JOIN "User" u ON u.userID = pa.userID; 
+"""
+
 GET_POST_BY_ID = " SELECT * FROM Post WHERE postID = %s; "
-GET_POST_BY_AUTHOR = " SELECT * FROM Post WHERE authorID = %s; "
+
+GET_POST_BY_AUTHOR = """ 
+    SELECT p.*
+    FROM Post p
+        JOIN PostAuthor pa ON p.postID = pa.postID
+    WHERE pa.userID = %s; 
+"""
+
 GET_LATEST_POST = " SELECT * FROM Post ORDER BY createdAt DESC LIMIT 10;  "  # get 10 latest created posts
-SEARCH_POST = " SELECT * FROM Post WHERE postTitle LIKE %s; "
+
+SEARCH_POST = """ 
+    SELECT p.*, u.*
+    FROM Post p
+        JOIN PostAuthor pa ON p.postID = pa.postID
+        JOIN "User" u ON u.userID = pa.userID
+    WHERE postTitle LIKE %s; 
+"""
 
 # Get user
 GET_ALL_USER = " SELECT * FROM 'User'; "
@@ -229,7 +285,6 @@ UPDATE_COMMENT_BY_ID = """
     UPDATE Comment
     SET 
         message = %s, 
-        replies = %s,
         updatedAt = %s
     WHERE commentID = %s;
 """
@@ -266,7 +321,6 @@ UPDATE_POST_BY_ID = """
     UPDATE Post
     SET 
         categoryID = %s, 
-        authorID = %s,
         postTitle = %s,
         postContent = %s,
         postStatus = %s,
@@ -309,6 +363,9 @@ DELETE_NOTIFICATION_BY_USER = " DELETE FROM Notification WHERE userID = %s; "
 # Delete post
 DELETE_POST_BY_ID = " DELETE FROM Post WHERE postID = %s; "
 
+# Delete post_author
+DELETE_POST_AUTHOR_BY_ID = " DELETE FROM PostAuthor WHERE postAuthorID = %s; "
+
 # Delete user
 DELETE_USER_BY_ID = " DELETE FROM 'User' WHERE userID = %s; "
 
@@ -325,7 +382,9 @@ def create_tables(connection):
         cursor.execute(CREATE_USER_TABLE)
         cursor.execute(CREATE_VIEWER_TABLE)
         cursor.execute(CREATE_POST_TABLE)
+        cursor.execute(CREATE_POST_AUTHOR_TABLE)
         cursor.execute(CREATE_COMMENT_TABLE)
+        cursor.execute(CREATE_REPLYTO_TABLE)
         cursor.execute(CREATE_MEDIA_TABLE)
         cursor.execute(CREATE_NOTIFICATION_TABLE)
 
@@ -445,15 +504,27 @@ def add_viewer(connection, username, email, createdAt):
         return cursor.fetchone()[0]
 
 
-def add_post(connection, categoryID, authorID, postTitle, postContent, postType, createdAt, updatedAt):
+def add_post(connection, categoryID, postTitle, postContent, postType, createdAt, updatedAt):
     with get_cursor(connection) as cursor:
-        cursor.execute(INSERT_POST_RETURN_ID, (categoryID, authorID, postTitle, postContent, postType, createdAt, updatedAt))
+        cursor.execute(INSERT_POST_RETURN_ID, (categoryID, postTitle, postContent, postType, createdAt, updatedAt))
         return cursor.fetchone()[0]
 
 
-def add_comment(connection, userID, postID, message, replies, createdAt, updatedAt):
+def add_post_author(connection, postID, userID):
     with get_cursor(connection) as cursor:
-        cursor.execute(INSERT_COMMENT_RETURN_ID, (userID, postID, message, replies, createdAt, updatedAt))
+        cursor.execute(INSERT_POST_AUTHOR_RETURN_ID, (postID, userID))
+        return cursor.fetchone()[0]
+
+
+def add_comment(connection, userID, postID, message, createdAt, updatedAt):
+    with get_cursor(connection) as cursor:
+        cursor.execute(INSERT_COMMENT_RETURN_ID, (userID, postID, message, createdAt, updatedAt))
+        return cursor.fetchone()[0]
+
+
+def add_replyto(connection, commentID, responseID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(INSERT_REPLYTO_RETURN_ID, (commentID, responseID))
         return cursor.fetchone()[0]
 
 
@@ -467,4 +538,5 @@ def add_notification(connection, postID, userID, notiType, status, notiContent, 
     with get_cursor(connection) as cursor:
         cursor.execute(INSERT_NOTIFICATION_RETURN_ID, (postID, userID, notiType, status, notiContent, createdAt, updatedAt))
         return cursor.fetchone()[0]
+
 
