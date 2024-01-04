@@ -16,3 +16,10 @@ def get_connection():
         yield connection
     finally: 
         pool.putconn(connection)
+
+
+@contextmanager
+def get_cursor(connection):
+    with connection:
+        with connection.cursor() as cursor:
+            yield cursor
