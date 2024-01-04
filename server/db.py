@@ -540,3 +540,47 @@ def add_notification(connection, postID, userID, notiType, status, notiContent, 
         return cursor.fetchone()[0]
 
 
+# ============================= UPDATE DATA FUNCTIONS ===============================
+
+def update_category(connection, categoryName, updatedAt, categoryID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(UPDATE_CATEGORY_BY_ID, (categoryName, updatedAt, categoryID))
+        return cursor.rowcount()
+
+
+def update_user(connection, username, email, password, userType, avatar, description, updatedAt, userID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(UPDATE_USER_BY_ID, (username, email, password, userType, avatar, description, updatedAt, userID))
+        return cursor.rowcount()
+
+
+def update_post(connection, categoryID, postTitle, postContent, postStatus, updatedAt, postID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(UPDATE_POST_BY_ID, (categoryID, postTitle, postContent, postStatus, updatedAt, postID))
+        return cursor.rowcount()
+
+
+def update_comment(connection, message, updatedAt, commentID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(UPDATE_COMMENT_BY_ID, (message, updatedAt, commentID))
+        return cursor.rowcount()
+
+
+def update_media(connection, mediaType, mediaUrl, size, mediaID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(UPDATE_MEDIA_BY_ID, (mediaType, mediaUrl, size, mediaID))
+        return cursor.rowcount()
+
+
+def update_notification_by_id(connection, status, updatedAt, notificationID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(UPDATE_NOTIFICATION_BY_ID, (status, updatedAt, notificationID))
+        return cursor.rowcount()
+
+
+def update_notification_by_user(connection, status, updatedAt, userID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(UPDATE_NOTIFICATION_BY_USER, (status, updatedAt, userID))
+        return cursor.rowcount()
+
+
