@@ -81,7 +81,8 @@ CREATE_REPLYTO_TABLE = """
         replyID SERIAL PRIMARY KEY,
         commentID INTEGER,
         responseID INTEGER,
-        FOREIGN KEY(commentID, responseID) REFERENCES Comment(commentID)
+        FOREIGN KEY(commentID) REFERENCES Comment(commentID),
+        FOREIGN KEY(responseID) REFERENCES Comment(commentID)
     );
 """
 
