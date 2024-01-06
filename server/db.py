@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from server.static.index import convert_to_utc_time
 
 @contextmanager
 def get_cursor(connection):
@@ -262,9 +263,9 @@ SEARCH_POST = """
 """
 
 # Get user
-GET_ALL_USER = " SELECT * FROM 'User'; "
-GET_USER_BY_ID = " SELECT * FROM 'User' WHERE userID = %s; "
-GET_USER_BY_EMAIL = " SELECT * FROM 'User' WHERE email = %s; "
+GET_ALL_USER = """ SELECT * FROM "User"; """
+GET_USER_BY_ID = """ SELECT * FROM "User" WHERE userID = %s; """
+GET_USER_BY_EMAIL = """ SELECT * FROM "User" WHERE email = %s; """
 
 # Get viewer
 GET_ALL_VIEWER = " SELECT * FROM Viewer; "
@@ -368,7 +369,7 @@ DELETE_POST_BY_ID = " DELETE FROM Post WHERE postID = %s; "
 DELETE_POST_AUTHOR_BY_ID = " DELETE FROM PostAuthor WHERE postAuthorID = %s; "
 
 # Delete user
-DELETE_USER_BY_ID = " DELETE FROM 'User' WHERE userID = %s; "
+DELETE_USER_BY_ID = """ DELETE FROM "User" WHERE userID = %s; """
 
 # Delete viewer
 DELETE_VIEWER_BY_ID = " DELETE FROM Viewer WHERE viewerID = %s; "
@@ -489,24 +490,31 @@ def get_notification_by_user(connection, userID):
 
 def add_category(connection, categoryName, createdAt, updatedAt):
     with get_cursor(connection) as cursor:
+        createdAt = convert_to_utc_time()
+        updatedAt = convert_to_utc_time()
         cursor.execute(INSERT_CATEGORY_RETURN_ID, (categoryName, createdAt, updatedAt))
         return cursor.fetchone()[0]
 
 
 def add_user(connection, username, email, password, userType, avatar, description, createdAt, updatedAt):
     with get_cursor(connection) as cursor:
+        createdAt = convert_to_utc_time()
+        updatedAt = convert_to_utc_time()
         cursor.execute(INSERT_USER_RETURN_ID, (username, email, password, userType, avatar, description, createdAt, updatedAt))
         return cursor.fetchone()[0]
 
 
 def add_viewer(connection, username, email, createdAt):
     with get_cursor(connection) as cursor:
+        createdAt = convert_to_utc_time()
         cursor.execute(INSERT_VIEWER_RETURN_ID, (username, email, createdAt))
         return cursor.fetchone()[0]
 
 
 def add_post(connection, categoryID, postTitle, postContent, postType, createdAt, updatedAt):
     with get_cursor(connection) as cursor:
+        createdAt = convert_to_utc_time()
+        updatedAt = convert_to_utc_time()
         cursor.execute(INSERT_POST_RETURN_ID, (categoryID, postTitle, postContent, postType, createdAt, updatedAt))
         return cursor.fetchone()[0]
 
@@ -519,6 +527,8 @@ def add_post_author(connection, postID, userID):
 
 def add_comment(connection, userID, postID, message, createdAt, updatedAt):
     with get_cursor(connection) as cursor:
+        createdAt = convert_to_utc_time()
+        updatedAt = convert_to_utc_time()
         cursor.execute(INSERT_COMMENT_RETURN_ID, (userID, postID, message, createdAt, updatedAt))
         return cursor.fetchone()[0]
 
@@ -537,6 +547,8 @@ def add_media(connection, postID, mediaType, mediaUrl, size):
 
 def add_notification(connection, postID, userID, notiType, status, notiContent, createdAt, updatedAt):
     with get_cursor(connection) as cursor:
+        createdAt = convert_to_utc_time()
+        updatedAt = convert_to_utc_time()
         cursor.execute(INSERT_NOTIFICATION_RETURN_ID, (postID, userID, notiType, status, notiContent, createdAt, updatedAt))
         return cursor.fetchone()[0]
 
@@ -545,24 +557,28 @@ def add_notification(connection, postID, userID, notiType, status, notiContent, 
 
 def update_category(connection, categoryName, updatedAt, categoryID):
     with get_cursor(connection) as cursor:
+        updatedAt = convert_to_utc_time()
         cursor.execute(UPDATE_CATEGORY_BY_ID, (categoryName, updatedAt, categoryID))
         return cursor.rowcount()
 
 
 def update_user(connection, username, email, password, userType, avatar, description, updatedAt, userID):
     with get_cursor(connection) as cursor:
+        updatedAt = convert_to_utc_time()
         cursor.execute(UPDATE_USER_BY_ID, (username, email, password, userType, avatar, description, updatedAt, userID))
         return cursor.rowcount()
 
 
 def update_post(connection, categoryID, postTitle, postContent, postStatus, updatedAt, postID):
     with get_cursor(connection) as cursor:
+        updatedAt = convert_to_utc_time()
         cursor.execute(UPDATE_POST_BY_ID, (categoryID, postTitle, postContent, postStatus, updatedAt, postID))
         return cursor.rowcount()
 
 
 def update_comment(connection, message, updatedAt, commentID):
     with get_cursor(connection) as cursor:
+        updatedAt = convert_to_utc_time()
         cursor.execute(UPDATE_COMMENT_BY_ID, (message, updatedAt, commentID))
         return cursor.rowcount()
 
@@ -575,12 +591,14 @@ def update_media(connection, mediaType, mediaUrl, size, mediaID):
 
 def update_notification_by_id(connection, status, updatedAt, notificationID):
     with get_cursor(connection) as cursor:
+        updatedAt = convert_to_utc_time()
         cursor.execute(UPDATE_NOTIFICATION_BY_ID, (status, updatedAt, notificationID))
         return cursor.rowcount()
 
 
 def update_notification_by_user(connection, status, updatedAt, userID):
     with get_cursor(connection) as cursor:
+        updatedAt = convert_to_utc_time()
         cursor.execute(UPDATE_NOTIFICATION_BY_USER, (status, updatedAt, userID))
         return cursor.rowcount()
 
