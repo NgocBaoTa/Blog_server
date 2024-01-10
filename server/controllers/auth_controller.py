@@ -16,38 +16,6 @@ load_dotenv(find_dotenv())
 hash_password_string = os.environ.get('HASH_PWD_METHOD')
 
 
-# @auth.route('/login', methods=['POST'])
-# def login():
-#     email = request.json["email"]
-#     password = request.json["password"]
-
-#     try:
-#         with get_connection() as connection:
-#             user = db.get_user_by_email(connection, email)
-#             if user and check_password_hash(user[3], password):
-#                 createdAt = convert_to_local_time(user[7])
-#                 updatedAt = convert_to_local_time(user[8])
-#                 user_instance = {
-#                     "userID": user[0], 
-#                     "username": user[1],
-#                     "email": user[2],
-#                     "userType": user[4],
-#                     "avatar": user[5],
-#                     "description": user[6],
-#                     "createdAt": createdAt,
-#                     "updatedAt": updatedAt
-#                 }     # Create the User instance
-
-#                 print(f"USER_INSTANCE: {user_instance}")
-#                 login_user(user_instance, remember=True)  # Log in the user
-#                 return jsonify({"message": "Login successfully!"}), 200 
-#             elif user:
-#                 return jsonify({"message": "Incorrect email or password!"}), 400 
-#             else:
-#                 return jsonify({"message": "User does not exist."}), 400
-#     except Exception as e:
-#         return jsonify(str(e)), 400 
-
 @auth.route('/login', methods=['POST'])
 def login():
     email = request.json["email"]
@@ -102,16 +70,5 @@ def register():
                     return jsonify({"message": "Register successfully", "userID": str(inserted_id)}), 200
                 except Exception as e:
                     return jsonify({"ERROR": str(e)}), 500
-    except Exception as e:
-            return jsonify(str(e)), 400 
-
- 
-@auth.route("/users", methods=["GET"])
-def get_users():
-    try: 
-        with get_connection() as connection:
-            # email = request.json["email"]
-            user = db.get_user_by_id(connection, 5)
-            return jsonify({"id": user[0], "username": user[1], "createdAt": user[7]}), 200
     except Exception as e:
             return jsonify(str(e)), 400 
