@@ -29,7 +29,6 @@ def login():
                 updatedAt = convert_to_local_time(user[8])
                 user_instance = User(user[0], user[1], user[2], user[3], user[4], user[5], user[6], createdAt, updatedAt)    # Create the User instance
 
-                print(f"USER_INSTANCE: {user_instance}")
                 login_user(user_instance, remember=True)  # Log in the user
                 return jsonify({"message": "Login successfully!"}), 200 
             elif user:

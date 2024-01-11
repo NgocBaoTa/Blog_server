@@ -352,11 +352,11 @@ DELETE_CATEGORY_BY_ID = " DELETE FROM Category WHERE categoryID = %s; "
 
 # Delete comment
 DELETE_COMMENT_BY_ID = " DELETE FROM Comment WHERE commentID = %s; "
-DELETE_COMMENT_BY_POST = " DELETE FROM Comment WHERE postID = %s; "
+DELETE_COMMENT_BY_POST = " DELETE FROM Comment WHERE postID = %s; "       # CHECK IF WE NEED IT OR AFTER DELETING THE POST, IT WILL AUTOMATICALLY DELETE ALL THE COMMENTS? 
 
 # Delete media
 DELETE_MEDIA_BY_ID = " DELETE FROM Media WHERE mediaID = %s; "
-DELETE_MEDIA_BY_POST = " DELETE FROM Media WHERE postID = %s; "
+DELETE_MEDIA_BY_POST = " DELETE FROM Media WHERE postID = %s; "   # CHECK IF WE NEED IT???
 
 # Delete notification 
 DELETE_NOTIFICATION_BY_ID = " DELETE FROM Notification WHERE notificationID = %s; "
@@ -640,8 +640,8 @@ def delete_comment_by_id(connection, commentID):
     with get_cursor(connection) as cursor:
         cursor.execute(DELETE_COMMENT_BY_ID, (commentID,))
         return cursor.rowcount()
-    
-def delete_comment_by_post(connection, postID):
+      
+def delete_comment_by_post(connection, postID):                     # CHECK IF WE NEED IT OR AFTER DELETING THE POST, IT WILL AUTOMATICALLY DELETE ALL THE COMMENTS?              
     with get_cursor(connection) as cursor:
         cursor.execute(DELETE_COMMENT_BY_POST, (postID,))
         return cursor.rowcount()
@@ -652,7 +652,7 @@ def delete_media_by_id(connection, mediaID):
         cursor.execute(DELETE_MEDIA_BY_ID, (mediaID,))
         return cursor.rowcount()
     
-def delete_media_by_post(connection, postID):
+def delete_media_by_post(connection, postID):              # CHECK IF WE NEED IT???
     with get_cursor(connection) as cursor:
         cursor.execute(DELETE_MEDIA_BY_POST, (postID,))
         return cursor.rowcount()
@@ -662,8 +662,8 @@ def delete_notification_by_id(connection, notificationID):
     with get_cursor(connection) as cursor:
         cursor.execute(DELETE_NOTIFICATION_BY_ID, (notificationID,))
         return cursor.rowcount()
-    
-def delete_notification_by_user(connection, userID):
+     
+def delete_notification_by_user(connection, userID):       # CHECK IF WE NEED IT???  Need to keep it if the post is deleted, how?
     with get_cursor(connection) as cursor:
         cursor.execute(DELETE_NOTIFICATION_BY_USER, (userID,))
         return cursor.rowcount()
