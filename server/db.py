@@ -252,6 +252,13 @@ GET_POST_BY_AUTHOR = """
     WHERE pa.userID = %s; 
 """
 
+GET_POST_BY_CATEGORY = """ 
+    SELECT p.*
+    FROM Post p
+        JOIN Category c ON p.categoryID = c.categoryID
+    WHERE c.categoryID = %s; 
+"""
+
 GET_LATEST_POST = " SELECT * FROM Post ORDER BY createdAt DESC LIMIT 10;  "  # get 10 latest created posts
 
 SEARCH_POST = """ 
@@ -440,6 +447,11 @@ def get_post_by_id(connection, postID):
 def get_post_by_author(connection, authorID):
     with get_cursor(connection) as cursor:
         cursor.execute(GET_POST_BY_AUTHOR, (authorID,))
+        return cursor.fetchall()
+
+def get_post_by_category(connection, categoryID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_POST_BY_CATEGORY, (categoryID,))
         return cursor.fetchall()
 
 def get_latest_post(connection):
