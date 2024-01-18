@@ -274,6 +274,13 @@ GET_ALL_USER = """ SELECT * FROM "User"; """
 GET_USER_BY_ID = """ SELECT * FROM "User" WHERE userID = %s; """
 GET_USER_BY_EMAIL = """ SELECT * FROM "User" WHERE email = %s; """
 
+GET_AUTHOR_BY_POST = """ 
+    SELECT u.*
+    FROM "User" u
+        JOIN PostAuthor pa ON a.userID = pa.userID
+    WHERE pa.postIDID = %s; 
+"""
+
 # Get viewer
 GET_ALL_VIEWER = " SELECT * FROM Viewer; "
 
@@ -426,6 +433,11 @@ def get_user_by_email(connection, email):
     with get_cursor(connection) as cursor:
         cursor.execute(GET_USER_BY_EMAIL, (email,))
         return cursor.fetchone()
+
+def get_author_by_post(connection, postID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_AUTHOR_BY_POST, (postID,))
+        return cursor.fetchall()
 
 # Get viewer
 def get_all_viewer(connection):
