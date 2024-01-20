@@ -278,7 +278,7 @@ GET_AUTHOR_BY_POST = """
     SELECT u.*
     FROM "User" u
         JOIN PostAuthor pa ON a.userID = pa.userID
-    WHERE pa.postIDID = %s; 
+    WHERE pa.postID = %s; 
 """
 
 # Get viewer

@@ -70,3 +70,85 @@ def search_post():
             return jsonify(str(e)), 400 
 
 
+@post.route('/', methods=["POST"])
+@login_required
+def create_post():
+        try:
+            with get_connection() as connection:
+                categoryID = request.json['categoryID']
+                postTitle = request.json['postTitle']
+                postContent = request.json['postContent']
+                postType = request.json['postType']
+                createdAt = datetime.now()
+                updatedAt = datetime.now()
+                try:
+                    inserted_id = db.add_post(connection, categoryID, postTitle, postContent, postType, createdAt, updatedAt)
+                    return jsonify({"message": "Add post successfully", "postID": str(inserted_id)}), 200
+                except Exception as e:
+                    return jsonify({"ERROR": str(e)}), 500
+        except Exception as e:
+            return jsonify(str(e)), 400
+
+
+@post.route('/<int:postID>', methods=['PUT'])
+@login_required
+def update_post(postID):
+    try:  
+        with get_connection() as connection: 
+            post = db.get_post_by_id(connection, postID)
+                
+            if post:
+                authors = db.get_author_by_post(connection, postID)
+                isAuthorized = False
+                for author in authors:
+                    if current_user.userID == author[0]:
+                        categoryID = request.json['categoryID']
+                        postTitle = request.json['postTitle']
+                        postContent = request.json['postContent']
+                        postStatus = request.json['postStatus']
+                        updatedAt = datetime.now()
+                        try: 
+                            db.update_post(connection, categoryID, postTitle, postContent, postStatus, updatedAt, postID)
+                            isAuthorized = True
+                            return jsonify(db.get_post_by_id(connection, postID)), 200
+                        except Exception as e:
+                            return jsonify(str(e)), 400
+                
+                if not isAuthorized:
+                    return jsonify({"message": "Unauthorized to update this post."}), 403  
+            else:
+                return jsonify({"message": "Post not found."}), 400
+    except Exception as e:
+        return jsonify(str(e)), 400
+    
+
+@post.route('/<int:postID>', methods=['DELETE'])
+@login_required
+def delete_post(postID):
+    try:   
+        with get_connection() as connection: 
+            post = db.get_post_by_id(connection, postID)
+            if post:
+                isAuthorized = False
+                if current_user.userType == 'admin':
+                    isAuthorized = True
+                else:
+                    authors = db.get_author_by_post(connection, postID)
+                    for author in authors:
+                        if current_user.userID == author[0]:
+                            isAuthorized = True
+                            break
+                
+                if not isAuthorized:
+                    return jsonify({"message": "Unauthorized to delete this post."}), 403 
+                else:
+                    try: 
+                        numEffectedRow = db.delete_post_by_id(postID)
+                        return jsonify({"NumEffectedRow": numEffectedRow, "message": "Post deleted."}), 200
+                    except Exception as e:
+                        return jsonify(str(e)), 400
+            else:
+                return jsonify({"message": "Post not found."}), 400
+    except Exception as e:
+        return jsonify(str(e)), 400
+
