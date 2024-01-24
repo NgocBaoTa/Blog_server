@@ -283,6 +283,7 @@ GET_AUTHOR_BY_POST = """
 
 # Get viewer
 GET_ALL_VIEWER = " SELECT * FROM Viewer; "
+GET_VIEWER_BY_ID = """ SELECT * FROM Viewer WHERE viewerID = %s; """
 
 
 # ============================= UPDATE DATA ===============================
@@ -444,6 +445,11 @@ def get_all_viewer(connection):
     with get_cursor(connection) as cursor:
         cursor.execute(GET_ALL_VIEWER)
         return cursor.fetchall()
+
+def get_viewer_by_id(connection, viewerID):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_VIEWER_BY_ID, (viewerID,))
+        return cursor.fetchone()
 
 # Get post
 def get_all_post(connection):
