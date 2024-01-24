@@ -31,6 +31,19 @@ def get_user_by_id(userID):
                 return jsonify({"message": "User not found."}), 400
     except Exception as e:
             return jsonify(str(e)), 400 
+
+
+@user.route('/<postID>', methods=['GET'])
+def get_author_by_post(postID):
+    try:
+        with get_connection() as connection:
+            author = db.get_author_by_post(connection, postID)
+            if author:
+                return jsonify(author), 200
+            else:
+                return jsonify({"message": "Author not found."}), 400
+    except Exception as e:
+            return jsonify(str(e)), 400 
         
         
 @user.route('/<int:userID>', methods=['PUT'])
