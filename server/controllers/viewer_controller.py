@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_login import login_required, current_viewer
+from flask_login import login_required, current_user
 import server.db as db
 from datetime import datetime
 from server.connection_pool import get_connection
