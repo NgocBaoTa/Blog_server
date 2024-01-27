@@ -79,11 +79,19 @@ def create_post():
                 postTitle = request.json['postTitle']
                 postContent = request.json['postContent']
                 postType = request.json['postType']
+                authorEmail = request.json['authorEmail']
                 createdAt = datetime.now()
                 updatedAt = datetime.now()
+                
+                post_author_id = []
                 try:
                     inserted_id = db.add_post(connection, categoryID, postTitle, postContent, postType, createdAt, updatedAt)
-                    return jsonify({"message": "Add post successfully", "postID": str(inserted_id)}), 200
+                    post_author_id.append(db.add_post_author(connection, inserted_id, current_user.userID))
+                    if authorEmail:
+                        for author in authorEmail:
+                            authorID = db.get_user_by_email(connection, author)[0]
+                            post_author_id.append(db.add_post_author(connection, inserted_id, authorID))
+                    return jsonify({"message": "Add post successfully", "postID": str(inserted_id), "post_author_id": post_author_id}), 200
                 except Exception as e:
                     return jsonify({"ERROR": str(e)}), 500
         except Exception as e:
