@@ -79,7 +79,7 @@ CREATE_COMMENT_TABLE = """
 
 CREATE_REPLYTO_TABLE = """
     CREATE TABLE IF NOT EXISTS ReplyTo (
-        replyID SERIAL PRIMARY KEY,
+        replyToID SERIAL PRIMARY KEY,
         commentID INTEGER,
         responseID INTEGER,
         FOREIGN KEY(commentID) REFERENCES Comment(commentID),
@@ -184,7 +184,7 @@ INSERT_REPLYTO_RETURN_ID = """
         commentID,
         responseID
     ) VALUES (%s, %s) 
-    RETURNING replyID;
+    RETURNING replyToID;
 """
 
 INSERT_MEDIA_RETURN_ID = """
