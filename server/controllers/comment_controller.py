@@ -37,11 +37,14 @@ def create_comment():
                 userID = request.json['userID']
                 postID = request.json['postID']
                 message = request.json['message']
+                repliedComment = request.json['repliedComment']
                 createdAt = datetime.now()
                 updatedAt = datetime.now()
                 try:
                     inserted_id = db.add_comment(connection, userID, postID, message, createdAt, updatedAt)
-                    return jsonify({"message": "Add comment successfully", "commentID": str(inserted_id)}), 200
+                    if repliedComment:
+                        replyToID = db.add_replyto(connection, repliedComment, inserted_id)
+                    return jsonify({"message": "Add comment successfully", "commentID": str(inserted_id), "replyToID": str(replyToID)}), 200
                 except Exception as e:
                     return jsonify({"ERROR": str(e)}), 500
         except Exception as e:
