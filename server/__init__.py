@@ -13,9 +13,22 @@ def create_app():
 
     from server.controllers.auth_controller import auth
     from server.controllers.category_controller import category
+    from server.controllers.comment_controller import comment
+    from server.controllers.media_controller import media
+    from server.controllers.notification_controller import notification
+    from server.controllers.post_controller import post
+    from server.controllers.user_controller import user
+    from server.controllers.viewer_controller import viewer
+
     
     app.register_blueprint(auth, url_prefix='/auth')
     app.register_blueprint(category, url_prefix='/category')
+    app.register_blueprint(comment, url_prefix='/comment')
+    app.register_blueprint(media, url_prefix='/media')
+    app.register_blueprint(notification, url_prefix='/notification')
+    app.register_blueprint(post, url_prefix='/post')
+    app.register_blueprint(user, url_prefix='/user')
+    app.register_blueprint(viewer, url_prefix='/viewer')
 
     @app.route('/')
     def home():
