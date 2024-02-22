@@ -36,10 +36,11 @@ def create_category():
         try:
             with get_connection() as connection:
                 categoryName = request.json['categoryName']
+                categoryImage = request.json['categoryImage']
                 createdAt = datetime.now()
                 updatedAt = datetime.now()
                 try:
-                    inserted_id = db.add_category(connection, categoryName, createdAt, updatedAt)
+                    inserted_id = db.add_category(connection, categoryName, categoryImage, createdAt, updatedAt)
                     return jsonify({"message": "Add category successfully", "categoryID": str(inserted_id)}), 200
                 except Exception as e:
                     return jsonify({"ERROR": str(e)}), 500
@@ -59,9 +60,10 @@ def update_category(categoryID):
                 category = db.get_category_by_id(connection, categoryID)
                 if category:
                     categoryName = request.json['categoryName']
+                    categoryImage = request.json['categoryImage']
                     updatedAt = datetime.now()
                     try: 
-                        db.update_category(connection, categoryName, updatedAt, categoryID)
+                        db.update_category(connection, categoryName, categoryImage, updatedAt, categoryID)
                         return jsonify(db.get_category_by_id(connection, categoryID)), 200
                     except Exception as e:
                         return jsonify(str(e)), 400

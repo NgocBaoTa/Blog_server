@@ -13,6 +13,7 @@ CREATE_CATEGORY_TABLE = """
     CREATE TABLE IF NOT EXISTS Category (
         categoryID SERIAL PRIMARY KEY, 
         categoryName TEXT,
+        categoryImage TEXT,
         createdAt INTEGER,
         updatedAt INTEGER
     );
@@ -119,6 +120,7 @@ CREATE_NOTIFICATION_TABLE = """
 INSERT_CATEGORY_RETURN_ID = """
     INSERT INTO Category (
         categoryName,
+        categoryImage,
         createdAt,
         updatedAt
     ) VALUES (%s, %s, %s) 
@@ -293,6 +295,7 @@ UPDATE_CATEGORY_BY_ID = """
     UPDATE Category
     SET 
         categoryName = %s, 
+        categoryImage = %s,
         updatedAt = %s
     WHERE categoryID = %s;
 """
@@ -518,11 +521,11 @@ def get_notification_by_user(connection, userID):
 
 # ============================= INSERT DATA FUNCTIONS ===============================
 
-def add_category(connection, categoryName, createdAt, updatedAt):
+def add_category(connection, categoryName, categoryImage, createdAt, updatedAt):
     with get_cursor(connection) as cursor:
         createdAt = convert_to_utc_time()
         updatedAt = convert_to_utc_time()
-        cursor.execute(INSERT_CATEGORY_RETURN_ID, (categoryName, createdAt, updatedAt))
+        cursor.execute(INSERT_CATEGORY_RETURN_ID, (categoryName, categoryImage, createdAt, updatedAt))
         return cursor.fetchone()[0]
 
 
@@ -585,10 +588,10 @@ def add_notification(connection, postID, userID, notiType, status, notiContent, 
 
 # ============================= UPDATE DATA FUNCTIONS ===============================
 
-def update_category(connection, categoryName, updatedAt, categoryID):
+def update_category(connection, categoryName, categoryImage, updatedAt, categoryID):
     with get_cursor(connection) as cursor:
         updatedAt = convert_to_utc_time()
-        cursor.execute(UPDATE_CATEGORY_BY_ID, (categoryName, updatedAt, categoryID))
+        cursor.execute(UPDATE_CATEGORY_BY_ID, (categoryName, categoryImage, updatedAt, categoryID))
         return cursor.rowcount()
 
 
