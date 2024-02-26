@@ -3,9 +3,14 @@ from flask_login import LoginManager
 from server.connection_pool import get_connection
 import server.db as db 
 from server.model.user_model import User
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    # CORS(app, origins="http://localhost:4200")
+    # CORS(app, origins="http://localhost:4200", supports_credentials=True)
+    # CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5000"}})
+    CORS(app)
     app.config['SECRET_KEY'] = "random" 
 
     with get_connection() as connection:

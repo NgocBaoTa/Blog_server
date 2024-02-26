@@ -123,7 +123,7 @@ INSERT_CATEGORY_RETURN_ID = """
         categoryImage,
         createdAt,
         updatedAt
-    ) VALUES (%s, %s, %s) 
+    ) VALUES (%s, %s, %s, %s) 
     RETURNING categoryID;
 """
 
