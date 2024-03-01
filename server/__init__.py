@@ -26,14 +26,14 @@ def create_app():
     from server.controllers.viewer_controller import viewer
 
     
-    app.register_blueprint(auth, url_prefix='/auth')
-    app.register_blueprint(category, url_prefix='/category')
-    app.register_blueprint(comment, url_prefix='/comment')
-    app.register_blueprint(media, url_prefix='/media')
-    app.register_blueprint(notification, url_prefix='/notification')
-    app.register_blueprint(post, url_prefix='/post')
-    app.register_blueprint(user, url_prefix='/user')
-    app.register_blueprint(viewer, url_prefix='/viewer')
+    app.register_blueprint(auth, url_prefix='/api/auth')
+    app.register_blueprint(category, url_prefix='/api/category')
+    app.register_blueprint(comment, url_prefix='/api/comment')
+    app.register_blueprint(media, url_prefix='/api/media')
+    app.register_blueprint(notification, url_prefix='/api/notification')
+    app.register_blueprint(post, url_prefix='/api/post')
+    app.register_blueprint(user, url_prefix='/api/user')
+    app.register_blueprint(viewer, url_prefix='/api/viewer')
 
     @app.route('/')
     def home():
