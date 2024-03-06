@@ -220,19 +220,19 @@ GET_ALL_CATEGORY = " SELECT * FROM Category; "
 GET_CATEGORY_BY_ID = " SELECT * FROM Category WHERE categoryID = %s; "
 GET_ALL_CATEGORY_WITH_POST = """ 
     SELECT 
-        c.categoryID 
-        c.categoryName
-        c.categoryImage
-        p.postID 
-        p.postTitle
-        p.postContent
+        c.categoryID,
+        c.categoryName,
+        c.categoryImage,
+        p.postID,
+        p.postTitle,
+        p.postContent,
         u.username
     FROM Category c 
     LEFT JOIN Post p 
         ON c.categoryID = p.categoryID 
     LEFT JOIN PostAuthor pa
         ON p.postID = pa.postID
-    LEFT JOIN user u
+    LEFT JOIN "User" u
         ON pa.userID = u.userID; 
 """
 
