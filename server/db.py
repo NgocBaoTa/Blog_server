@@ -218,6 +218,23 @@ INSERT_NOTIFICATION_RETURN_ID = """
 # Get category
 GET_ALL_CATEGORY = " SELECT * FROM Category; "
 GET_CATEGORY_BY_ID = " SELECT * FROM Category WHERE categoryID = %s; "
+GET_ALL_CATEGORY_WITH_POST = """ 
+    SELECT 
+        c.categoryID 
+        c.categoryName
+        c.categoryImage
+        p.postID 
+        p.postTitle
+        p.postContent
+        u.username
+    FROM Category c 
+    LEFT JOIN Post p 
+        ON c.categoryID = p.categoryID 
+    LEFT JOIN PostAuthor pa
+        ON p.postID = pa.postID
+    LEFT JOIN user u
+        ON pa.userID = u.userID; 
+"""
 
 # Get comment
 GET_COMMENT_BY_ID = " SELECT * FROM Comment WHERE commentID = %s; "
@@ -421,6 +438,11 @@ def get_category_by_id(connection, categoryID):
     with get_cursor(connection) as cursor:
         cursor.execute(GET_CATEGORY_BY_ID, (categoryID,))
         return cursor.fetchone()
+
+def get_all_category_with_post(connection):
+    with get_cursor(connection) as cursor:
+        cursor.execute(GET_ALL_CATEGORY_WITH_POST)
+        return cursor.fetchall()
 
 # Get user
 def get_all_user(connection):

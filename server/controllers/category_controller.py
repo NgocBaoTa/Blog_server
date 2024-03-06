@@ -27,6 +27,16 @@ def get_category_by_id(categoryID):
                 return jsonify({"message": "Category not found."}), 400
     except Exception as e:
             return jsonify(str(e)), 400 
+
+
+@category.route('/cate_with_post', methods=['GET'])
+def get_all_category_with_post():
+    try:
+        with get_connection() as connection:
+            categories = db.get_all_category_with_post(connection)
+            return jsonify(categories), 200
+    except Exception as e:
+            return jsonify(str(e)), 400 
         
 
 @category.route('/', methods=["POST"])
